@@ -6,6 +6,7 @@ import '../services/alarm_service.dart';
 import '../utils/time_utils.dart';
 import '../widgets/alarm_list_item.dart';
 import 'alarm_edit_screen.dart';
+import 'current_time_widget.dart';
 
 class AlarmListScreen extends StatelessWidget {
   const AlarmListScreen({super.key});
@@ -34,34 +35,39 @@ class AlarmListScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Consumer<AlarmService>(
-        builder: (context, alarmService, child) {
-          final alarms = alarmService.alarms;
-
-          if (alarms.isEmpty) {
-            return _buildEmptyState();
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            itemCount: alarms.length,
-            itemBuilder: (context, index) {
-              final alarm = alarms[index];
-              return AlarmListItem(
-                alarm: alarm,
-                onToggle: (value) {
-                  alarmService.toggleAlarm(alarm.id, value);
-                },
-                onTap: () {
-                  _editAlarm(context, alarm);
-                },
-                onDelete: () {
-                  _deleteAlarm(context, alarm.id);
-                },
-              );
-            },
-          );
-        },
+      body: Column(
+        children: [
+          const CurrentTimeWidget(),
+          Expanded(
+            child: Consumer<AlarmService>(
+              builder: (context, alarmService, child) {
+                final alarms = alarmService.alarms;
+                if (alarms.isEmpty) {
+                  return _buildEmptyState();
+                }
+                return ListView.builder(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  itemCount: alarms.length,
+                  itemBuilder: (context, index) {
+                    final alarm = alarms[index];
+                    return AlarmListItem(
+                      alarm: alarm,
+                      onToggle: (value) {
+                        alarmService.toggleAlarm(alarm.id, value);
+                      },
+                      onTap: () {
+                        _editAlarm(context, alarm);
+                      },
+                      onDelete: () {
+                        _deleteAlarm(context, alarm.id);
+                      },
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,

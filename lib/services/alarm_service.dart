@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:flutter/services.dart';
 
 import '../models/alarm.dart';
 
@@ -255,8 +256,27 @@ class AlarmService extends ChangeNotifier {
       );
       print('알람 스케줄링 성공: ID=${alarm.id}');
     } catch (e) {
-      print('알람 스케줄링 실패: ID=${alarm.id}, 오류=$e');
-      rethrow;
+      if (e is PlatformException && e.code == 'exact_alarms_not_permitted') {
+        print(
+          'Exact alarm permission not granted, falling back to inexact scheduling for alarm ${alarm.id}',
+        );
+        await _notificationsPlugin.zonedSchedule(
+          alarm.id,
+          alarm.title,
+          alarm.description,
+          scheduledDate,
+          notificationDetails,
+          androidScheduleMode: AndroidScheduleMode.inexact,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents:
+              alarm.isRepeating ? DateTimeComponents.dayOfWeekAndTime : null,
+        );
+        print('알람 스케줄링 대체 성공 (inexact mode): ID=${alarm.id}');
+      } else {
+        print('알람 스케줄링 실패: ID=${alarm.id}, 오류=$e');
+        rethrow;
+      }
     }
   }
 

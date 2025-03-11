@@ -11,6 +11,11 @@ String formatTime24Hour(DateTime time) {
   return DateFormat('HH:mm').format(time);
 }
 
+// 시간 포맷 (24시간제) - 초까지 표시
+String formatTime24HourWithSeconds(DateTime time) {
+  return DateFormat('HH:mm:ss').format(time);
+}
+
 // 요일 이름 가져오기
 List<String> getWeekdayNames() {
   return ['월', '화', '수', '목', '금', '토', '일'];
@@ -59,6 +64,7 @@ String getRemainingTime(DateTime alarmTime) {
     now.day,
     alarmTime.hour,
     alarmTime.minute,
+    alarmTime.second,
   );
 
   if (nextAlarm.isBefore(now)) {
@@ -68,11 +74,14 @@ String getRemainingTime(DateTime alarmTime) {
   final difference = nextAlarm.difference(now);
   final hours = difference.inHours;
   final minutes = difference.inMinutes % 60;
+  final seconds = difference.inSeconds % 60;
 
   if (hours > 0) {
-    return '$hours시간 $minutes분 후';
+    return '$hours시간 $minutes분 $seconds초 후';
+  } else if (minutes > 0) {
+    return '$minutes분 $seconds초 후';
   } else {
-    return '$minutes분 후';
+    return '$seconds초 후';
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/alarm.dart';
 import '../utils/time_utils.dart';
+import 'countdown_widget.dart';
 
 class AlarmListItem extends StatelessWidget {
   final Alarm alarm;
@@ -33,7 +34,7 @@ class AlarmListItem extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            formatTime24Hour(alarm.time),
+            formatTime24HourWithSeconds(alarm.time),
             style: const TextStyle(color: Colors.grey),
           ),
           if (alarm.repeatDays.any((element) => element))
@@ -41,10 +42,7 @@ class AlarmListItem extends StatelessWidget {
               formatWeekdays(alarm.repeatDays),
               style: const TextStyle(color: Colors.grey),
             ),
-          Text(
-            getRemainingTime(alarm.time),
-            style: const TextStyle(color: Colors.grey),
-          ),
+          CountdownWidget(alarmTime: alarm.time),
         ],
       ),
       trailing: Switch(
